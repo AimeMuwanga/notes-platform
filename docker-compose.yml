@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  # 1. THE SHARED DATABASE
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d authdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # 2. THE SHARED CACHE
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  # 3. AUTH SERVICE
+  auth-api:
+    build: ./services/auth-service
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/authdb
+      - JWT_SECRET=supersecretjwtkey
+
+  # 4. NOTES SERVICE
+  notes-api:
+    build: ./services/notes-service
+    ports:
+      - "3002:3002"
+    depends_on:
+      - auth-api
+      - postgres
+      - redis
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/notesdb
+      - REDIS_URL=redis://redis:6379
+      - AUTH_SERVICE_URL=http://auth-api:3001
+      - PORT=3002
+
+volumes:
+  pgdata:
