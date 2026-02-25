@@ -1,45 +1,42 @@
-Architecture Overview
-The system is divided into two primary services and two data stores, all orchestrated via Docker:
+**# Note-Platform Microservices**
 
-Auth Service (Port 3001): Handles user registration, JWT-based login, and profile management.
+A containerised backend system utilising a microservices architecture to handle user authentication and note management. This project demonstrates modern backend practices, including service-to-service communication, database migrations, and container orchestration.
 
-Notes Service (Port 3002): Manages CRUD operations for notes, linked to users via UUIDs.
+**Architecture Overview** 
+The system is divided into two primary services and two data stores, all implemented via Docker. 
 
-PostgreSQL: The primary relational database (running on port 5433 host-side).
+- Auth Service (Port 3001): Handles user registration, JWT-based login, and profile management.
 
-Redis: High-performance caching layer for session management and quick data retrieval.
+- Notes Service (Port 3002): Manages CRUD operations for notes, linked to users via UUIDs.
 
-🛠️ Tech Stack
-Runtime: Node.js
+- PostgreSQL: The primary relational database (running on port 5433 host-side).
 
-Framework: Fastify (High performance, low overhead)
+- Redis: High-performance caching layer for session management and quick data retrieval.
 
-Database: PostgreSQL 15
+ **Features**
+- User Authentication: Secure registration and login with encrypted password handling.
 
-Cache: Redis 7
+- Schema Validation: Strict request body validation using JSON Schemas to ensure data integrity.
 
-Containerization: Docker & Docker Compose
+- Service Isolation: Independent scaling and deployment of Auth and Note logic.
 
-Auth: JWT (JSON Web Tokens)
+- Health Checks: Integrated Docker health checks to ensure database readiness before service start.
 
-📋 Features
-User Authentication: Secure registration and login with encrypted password handling.
+**Prerequisites**
+- Docker & Docker Desktop
+- PostgreSQL Client (psql)
 
-Schema Validation: Strict request body validation using JSON Schemas to ensure data integrity.
+**Installation & Setup**
+1. Clone the repository:
+2. Start the infrastructure:
+3. Run Database Migrations:
 
-Service Isolation: Independent scaling and deployment of Auth and Note logic.
+**API Endpoints**
+Auth Service (:3001/api/auth)
+POST /register - Register a new user.
+POST /login - Returns a JWT token.
+GET /me - Returns current user profile (Requires Auth Header).
 
-Health Checks: Integrated Docker health checks to ensure database readiness before service start.
-
- Getting Started
-Prerequisites
-Docker & Docker Desktop
-
-PostgreSQL Client (psql)
-
-Installation & Setup
--Clone the repository:
-
--Start the infrastructure:
-
--Run Database Migrations:
+Notes Service (:3002/api/notes)
+GET /notes - List all notes (Filterable by user_id).
+POST /notes - Create a new note (Requires user_id, title, and content).
