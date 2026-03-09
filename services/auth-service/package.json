@@ -10,17 +10,18 @@
         "migrate": "psql \"$DATABASE_URL\" -f migrations/001_init.sql"
     },
     "dependencies": {
+        "@fastify/cors": "^11.2.0",
+        "@fastify/helmet": "^13.0.2",
         "@fastify/jwt": "^10.0.0",
         "bcrypt": "^5.1.0",
         "dotenv": "^16.3.1",
-        "fastify": "latest",
-        "@fastify/helmet": "^13.0.2",
-        "pg": "^8.11.0",
+        "fastify": "^5.8.1",
         "uuid": "^9.0.1"
     },
     "devDependencies": {
         "jest": "^29.7.0",
-        "nodemon": "^3.0.2"
+        "nodemon": "^3.0.2",
+        "pg": "^8.20.0"
     },
     "description": "",
     "directories": {

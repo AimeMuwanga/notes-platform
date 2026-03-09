@@ -1,9 +1,9 @@
-const buildApp = require('../src/app');
+import buildApp from '../src/app';
 
 let app;
 
 beforeAll(async () => {
-    process.env.DATABASE_URL = 'postgres://postgres:postgres@localhost:5433/authdb';
+    process.env.DATABASE_URL = 'postgres://postgres:postgres@localhost:5432/notes_test';
     process.env.JWT_SECRET = 'testsecret';
     app = buildApp({ logger: false });
     await app.ready();

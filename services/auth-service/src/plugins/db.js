@@ -5,13 +5,14 @@ import pg from 'pg';
 async function dbPlugin(fastify, opts) {
     const pool = new pg.Pool({
         connectionString: process.env.DATABASE_URL,
-        connectionTimeoutMillis: 5000
+        host: process.env.NODE_ENV === 'test' ? 'localhost' : (process.env.DB_HOST || 'db'),
+        
     });
 
     try {
         const client = await pool.connect();
         fastify.log.info('Connected to PostgreSQL successfully');
-        client.release(); // Important: release the test client back to the pool
+        client.release(); 
 
         fastify.decorate('pg', pool);
     } catch (err) {

@@ -18,3 +18,9 @@ export default function buildApp(opts = {}) {
 
     return fastify;
 }
+
+const app = Fastify()
+
+app.addHook('onClose', async (instance) => {
+  await db.close(); 
+});
