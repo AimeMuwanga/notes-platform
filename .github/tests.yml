@@ -30,13 +30,18 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22.14.0' 
+          node-version: '22.14.0'
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          npm --prefix services/auth-service install
+          npm --prefix services/notes-service install
 
       - name: Create .env.test
         run: |
           echo "DATABASE_URL=postgresql://postgres:password@localhost:5432/my_test_db" > .env.test
+          echo "NODE_ENV=test" >> .env.test
+          echo "JWT_SECRET=test-secret-key" >> .env.test
 
       - name: Run Tests
         run: npm test

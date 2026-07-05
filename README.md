@@ -1,4 +1,4 @@
-**# Note-Platform Microservices**
+# Notes Platform Microservices
 
 A containerised backend system utilising a microservices architecture to handle user authentication and note management. This project demonstrates modern backend practices, including service-to-service communication, database migrations, and container orchestration.
 
@@ -9,7 +9,7 @@ The system is divided into two primary services and two data stores, all impleme
 
 - Notes Service (Port 3002): Manages CRUD operations for notes, linked to users via UUIDs.
 
-- PostgreSQL: The primary relational database (running on port 5433 host-side).
+- PostgreSQL: The primary relational database (running on port 5432 host-side).
 
 - Redis: High-performance caching layer for session management and quick data retrieval.
 
@@ -27,9 +27,13 @@ The system is divided into two primary services and two data stores, all impleme
 - PostgreSQL Client (psql)
 
 **Installation & Setup**
-1. Clone the repository:
-2. Start the infrastructure:
-3. Run Database Migrations:
+1. Install dependencies:
+   `npm install`
+   `npm --prefix services/auth-service install`
+   `npm --prefix services/notes-service install`
+2. Start the stack:
+   `docker compose up --build`
+3. Docker Compose runs the auth and notes migrations before the APIs start.
 
 **API Endpoints**
 Auth Service (:3001/api/auth)
@@ -38,5 +42,10 @@ POST /login - Returns a JWT token.
 GET /me - Returns current user profile (Requires Auth Header).
 
 Notes Service (:3002/api/notes)
-GET /notes - List all notes (Filterable by user_id).
-POST /notes - Create a new note (Requires user_id, title, and content).
+GET /notes - List notes for the authenticated user.
+POST /notes - Create a note for the authenticated user.
+GET /notes/:id - Read a single owned note.
+PUT /notes/:id - Update a single owned note.
+DELETE /notes/:id - Delete a single owned note.
+
+All notes endpoints require `Authorization: Bearer <token>`. Do not send `user_id`; the notes service derives it from the JWT subject.

@@ -3,10 +3,18 @@ import fp from 'fastify-plugin';
 import pg from 'pg';
 
 async function dbPlugin(fastify, opts) {
+    if (!process.env.DATABASE_URL) {
+        throw new Error('DATABASE_URL is required');
+    }
+
     const pool = new pg.Pool({
         connectionString: process.env.DATABASE_URL,
-        host: process.env.NODE_ENV === 'test' ? 'localhost' : (process.env.DB_HOST || 'db'),
-        
+        connectionTimeoutMillis: 5000,
+        query_timeout: 10000
+    });
+
+    pool.on('error', (err) => {
+        fastify.log.error({ err }, 'Unexpected PostgreSQL pool error');
     });
 
     try {
@@ -21,7 +29,7 @@ async function dbPlugin(fastify, opts) {
     }
 
     
-    fastify.addHook('onClose', async (instance) => {
+    fastify.addHook('onClose', async () => {
         await pool.end();
     });
 }

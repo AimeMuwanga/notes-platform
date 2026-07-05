@@ -1,12 +1,17 @@
 import buildApp from '../src/app';
+import { resetDb } from '../../../tests/helpers/reset-db';
 
 let app;
 
 beforeAll(async () => {
-    process.env.DATABASE_URL = 'postgres://postgres:postgres@localhost:5432/notes_test';
-    process.env.JWT_SECRET = 'testsecret';
+    process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-secret-key';
+    await resetDb();
     app = buildApp({ logger: false });
     await app.ready();
+});
+
+beforeEach(async () => {
+    await resetDb();
 });
 
 afterAll(async () => {
@@ -42,4 +47,6 @@ test('register -> login -> me', async () => {
     });
 
     expect(me.statusCode).toBe(200);
+    const profile = JSON.parse(me.payload);
+    expect(profile.email).toBe(email);
 });

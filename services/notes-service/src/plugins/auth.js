@@ -1,33 +1,27 @@
-// src/plugins/jwt.js
+// src/plugins/auth.js
 import fp from 'fastify-plugin';
 import fastifyJwt from '@fastify/jwt';
 
-async function jwtPlugin(fastify, opts) {
+async function authPlugin(fastify) {
     if (!process.env.JWT_SECRET) {
         throw new Error('JWT_SECRET is required');
     }
 
     await fastify.register(fastifyJwt, {
         secret: process.env.JWT_SECRET,
-        sign: {
-            expiresIn: process.env.JWT_EXPIRES_IN || '1h',
-            iss: 'notes-platform-auth',
-            aud: 'notes-platform-api'
-        },
         verify: {
             allowedIss: 'notes-platform-auth',
             allowedAud: 'notes-platform-api'
         }
     });
 
-
-    fastify.decorate("authenticate", async function (request, reply) {
+    fastify.decorate('authenticate', async function authenticate(request, reply) {
         try {
             await request.jwtVerify();
-        } catch (err) {
+        } catch {
             return reply.code(401).send({ message: 'Unauthorized' });
         }
     });
 }
 
-export default fp(jwtPlugin);
+export default fp(authPlugin);

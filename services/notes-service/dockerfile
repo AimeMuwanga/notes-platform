@@ -3,11 +3,13 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
-RUN npm install 
+RUN apk add --no-cache postgresql-client \
+    && npm ci --omit=dev
 
 COPY . .
 
 
-EXPOSE 3000
+ENV NODE_ENV=production
+EXPOSE 3002
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]
